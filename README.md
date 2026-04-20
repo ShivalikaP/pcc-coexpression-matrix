@@ -1,13 +1,122 @@
-# Perl-script-to-calculate-Pearson-correlation-coefficient
+# Pearson Correlation Coefficient Calculator for Co-expression Analysis
 
 ![Perl](https://img.shields.io/badge/Perl-5%2B-blue?logo=perl&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 ![Status](https://img.shields.io/badge/status-maintained-brightgreen)
 
-Batch Pearson Correlation Coefficient (PCC) calculator written in Perl.
-Computes all-vs-all gene expression correlations between a query set and a reference set.
+A Perl-based tool for computing all-vs-all Pearson Correlation Coefficients between two biologically distinct feature sets — such as transcription factors and target genes, or small RNAs and genes — across shared expression samples. Generates co-expression matrices suitable for regulatory network construction and downstream analysis.
 
-Originally developed at **CSIR-IHBT** for bioinformatics gene expression analysis.
+Originally developed at **CSIR-IHBT** for co-expression analysis in secondary metabolite biosynthesis pathways.
+
+---
+
+## 🧬 Biological Application
+
+This tool is designed for cases where the two feature sets differ in biological role and optionally in size. Typical use cases include:
+
+- Transcription factor – gene co-expression analysis
+- Small RNA – gene co-expression analysis
+- Identification of candidate regulatory relationships
+- Generation of co-expression matrices for network construction and visualization
+
+By computing pairwise correlations across expression profiles, the script helps identify candidate regulatory associations for downstream network inference workflows.
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# Recommended (modernized scripts)
+perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv results/PCC_output.txt
+
+# Original scripts (preserved as-is)
+perl PCC_main.pl query.tsv reference.tsv
+```
+
+---
+
+## 📋 Input Format
+
+Tab-separated, one feature per line: `feature_id <TAB> value1 <TAB> value2 ...`
+
+```
+TF_A    1.2    3.4    2.1    4.5    1.8
+TF_B    5.0    4.0    3.0    2.0    1.0
+```
+
+Both the query file (e.g. transcription factors) and the reference file (e.g. target genes) must have the same number of expression values per row. The two sets can differ in the number of features.
+
+---
+
+## 📄 Output Format
+
+Tab-separated: `query_feature <TAB> reference_feature <TAB> PCC_value`
+
+```
+TF_A    Gene1    0.9987
+TF_A    Gene3    0.1453
+TF_A    Gene2   -0.9921
+```
+
+Within each query feature, pairs are sorted by PCC in descending order.
+
+---
+
+## 🔬 How it works
+
+`PCC_main.pl` iterates over every query feature paired with every reference feature, calling `cor.pl` to compute the PCC for each pair. The Pearson formula used is:
+
+$$r = \frac{SS_{xy}}{\sqrt{SS_{xx} \cdot SS_{yy}}}$$
+
+See [docs/usage.md](docs/usage.md) for the full algorithm description, argument reference, and troubleshooting.
+
+---
+
+## 📁 Repository Structure
+
+```
+.
+├── PCC_main.pl              # Original main script (preserved)
+├── cor.pl                   # Original correlation script (preserved)
+├── scripts/
+│   ├── PCC_main.pl          # Modernized main script (recommended)
+│   └── cor.pl               # Modernized correlation script (recommended)
+├── examples/
+│   ├── query.tsv            # Example query feature expression input
+│   ├── reference.tsv        # Example reference feature expression input
+│   └── output_example.txt   # Expected output format
+├── docs/
+│   └── usage.md             # Detailed usage and format guide
+├── data/                    # Your input data (gitignored)
+└── results/                 # Your output results (gitignored)
+```
+
+---
+
+## ✅ Requirements
+
+- Perl 5 (no non-core modules required)
+
+---
+
+## 📖 Citation
+
+If you use this code, please cite:
+
+> *Computational Analysis of "-omics" Data to Identify Transcription Factors Regulating Secondary Metabolism in Rauvolfia serpentina.*
+
+---
+
+## 👩‍💻 Author
+
+**Shivalika Pathania** — CSIR-IHBT
+
+---
+
+## 📄 License
+
+[GNU General Public License v3.0](LICENSE)
+
 
 ---
 
