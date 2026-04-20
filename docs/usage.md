@@ -30,6 +30,18 @@ The pipeline consists of two scripts:
 
 ---
 
+## ⚡ Quick Start
+
+```bash
+# Using modernized scripts (recommended)
+perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv results/PCC_output.txt
+
+# Using original scripts
+perl PCC_main.pl query.tsv reference.tsv
+```
+
+---
+
 ## Algorithm
 
 The Pearson Correlation Coefficient between a query gene **X** and a reference gene **Y** across *n* conditions is:
@@ -175,3 +187,9 @@ GeneA	RefGene1	0.9987
 | Empty or missing output | Gene pair had zero variance | A constant expression vector produces `r = 0` — this is expected |
 | Results not sorted globally | By design | Results are sorted per query gene, not globally across all pairs |
 | Mismatched column counts | Both files must have the same number of values | Check that every row has the same number of tab-separated columns |
+
+---
+
+## ✅ Requirements
+
+- Perl 5 (no non-core modules required)
