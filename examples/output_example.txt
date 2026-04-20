@@ -1,0 +1,12 @@
+# Example output from:
+#   perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv
+#
+# Format: query_gene_id <TAB> ref_gene_id <TAB> PCC_value
+# Sorted by PCC descending within each query gene.
+
+GeneA	RefGene1	0.9987
+GeneA	RefGene3	0.1453
+GeneA	RefGene2	-0.9921
+GeneB	RefGene2	0.9999
+GeneB	RefGene1	-0.9921
+GeneB	RefGene3	-0.2105

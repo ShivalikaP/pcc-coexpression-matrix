@@ -28,6 +28,23 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
+# =========================
+# Pipeline I/O (keep data out of version control)
+# =========================
+
+data/
+results/
+
+# Pipeline outputs
+PCC_output
+PCC_output*
+*.pcc_out
+
+# Temporary files created by PCC_main.pl during runs
+tmp_pcc_*
+new
+new1
+
 # Thumbnails
 ._*
 
