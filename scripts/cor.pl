@@ -1,96 +1,111 @@
-#@author Shivalika Pathania
-#CSIR-IHBT
-#!/usr/bin/perl -w
-#use strict;
-#use warnings;
-open(QUERY, "<", $ARGV[0]) or die "Couldn't open query: $!";
-open (ANNOT, "<", $ARGV[1]) or die "Couldn't open csv: $!";
- 
-my @arrx;
-$f="";
-while (<QUERY>){
-        chomp;
-        my @arr = split("\t", $_);
-        my $gene_id_1=shift @arr;
-$f = $gene_id_1;
-        foreach my $ele (@arr){
-                push(@arrx, $ele);
-        }
-#print "@arrx\n";
+#!/usr/bin/perl
+use strict;
+use warnings;
 
+# =============================================================================
+# cor.pl — Pearson Correlation Coefficient computation
+# =============================================================================
+# Author:  Shivalika Pathania (CSIR-IHBT)
+# Purpose: Read one query gene and one or more reference genes from two
+#          tab-separated files, compute PCC for each pair, print results
+#          sorted by PCC in descending order.
+#
+# Usage (standalone):
+#   perl scripts/cor.pl <query_file> <reference_file>
+#
+# Typically called from PCC_main.pl with single-gene temp files.
+#
+# Input format (both files):
+#   gene_id <TAB> value1 <TAB> value2 <TAB> ...
+#
+# Output:
+#   query_gene_id <TAB> ref_gene_id <TAB> PCC_value
+# =============================================================================
 
+unless (@ARGV == 2) {
+    die "Usage: perl scripts/cor.pl <query_file> <reference_file>\n";
+}
 
+# Shared data structures accessed by subroutines
+our @x;       # $x[1][i] = query values, $x[2][i] = ref values
+our @mean;    # mean[1] = query mean,    mean[2] = ref mean
+our $nbdata;  # number of expression values per gene
+
+# ── Read query gene ───────────────────────────────────────────────────────────
+open(my $fh_query, '<', $ARGV[0])
+    or die "Cannot open query file '$ARGV[0]': $!\n";
+
+my ($query_id, @query_vals);
+while (<$fh_query>) {
+    chomp;
+    my @fields  = split("\t", $_);
+    $query_id   = shift @fields;
+    @query_vals = @fields;
 }
-#print "$gene_id_1\n";
-my @x;
-my $i = 0;
-foreach my $elex (@arrx){
-        $x[1][$i]=$elex;
-        $i++;
+close $fh_query;
+
+$nbdata = scalar @query_vals;
+die "No expression values found in query file\n" unless $nbdata > 0;
+
+for my $i (0 .. $nbdata - 1) {
+    $x[1][$i] = $query_vals[$i];
 }
-#my $numx = $i;
-my $nbdata = $i;
-my @mean;
-my %hash;
-while(<ANNOT>){
-        chomp;
-        my @arry = split(/\t/, $_);
-        my $gene_id = shift @arry;
-#print "$gene_id\n";
-        my $i=0;
-        foreach my $eley (@arry){
-                $x[2][$i]=$eley;
-                $i++;
-        }
-#        if ($i != $numx){
- #               die "Arrays not the same size\n";
-  #      }
-        my $correl = correlation();
-#print "$gene_id\t$f\n";
-$name_of_cor= "$f\t$gene_id";
-        $hash{$name_of_cor}=$correl;
+
+# ── Read reference genes and compute PCC for each ─────────────────────────────
+open(my $fh_ref, '<', $ARGV[1])
+    or die "Cannot open reference file '$ARGV[1]': $!\n";
+
+my %results;
+while (<$fh_ref>) {
+    chomp;
+    my @fields = split(/\t/, $_);
+    my $ref_id = shift @fields;
+
+    for my $i (0 .. $#fields) {
+        $x[2][$i] = $fields[$i];
+    }
+
+    $results{"$query_id\t$ref_id"} = correlation();
 }
-foreach my $key (sort {$hash{$b} <=> $hash{$a}} keys %hash){
-        print "$key\t$hash{$key}";
+close $fh_ref;
+
+for my $key (sort { $results{$b} <=> $results{$a} } keys %results) {
+    print "$key\t$results{$key}";
 }
+
+# ── Subroutines ───────────────────────────────────────────────────────────────
+
 sub correlation {
-        $mean[1] = mean(1);
-        $mean[2] = mean(2);
-        my $ssxx = ss(1,1);
-        my $ssyy = ss(2,2);
-        my $ssxy = ss(1,2);
-        #print "$ssxx\t$ssyy\t$ssxy\n";
-        my $correl = correl($ssxx, $ssyy, $ssxy);
-        $correl =	 sprintf("%.4f\n", $correl);
-        return $correl;
- 
+    $mean[1] = mean(1);
+    $mean[2] = mean(2);
+    my $ssxx = ss(1, 1);
+    my $ssyy = ss(2, 2);
+    my $ssxy = ss(1, 2);
+    my $pcc  = correl($ssxx, $ssyy, $ssxy);
+    return sprintf("%.4f\n", $pcc);
 }
+
 sub mean {
- 
-        my ($a)=@_;
-        my ($j,$sum)=(0,0);
- 
-        for ($j=0;$j<$nbdata;$j++){
-                $sum=$sum+$x[$a][$j];
-        }
-        my $mu=$sum/$nbdata;
- 
-        return $mu;
- 
+    my ($a)  = @_;
+    my $sum  = 0;
+    for my $j (0 .. $nbdata - 1) {
+        $sum += $x[$a][$j];
+    }
+    return $sum / $nbdata;
 }
- 
- 
-sub ss{
-        my ($row, $col) = @_;
-        my $sum = 0;
-        for (my $i = 0; $i<$nbdata; $i++){
-                $sum += ($x[$row][$i]-$mean[$row])*($x[$col][$i]-$mean[$col]);
-        }
-        return $sum;
+
+sub ss {
+    my ($row, $col) = @_;
+    my $sum = 0;
+    for my $i (0 .. $nbdata - 1) {
+        $sum += ($x[$row][$i] - $mean[$row]) * ($x[$col][$i] - $mean[$col]);
+    }
+    return $sum;
 }
-sub correl{
-        my ($ssxx, $ssyy, $ssxy) = @_;
-        my $sign = $ssxy/abs($ssxy);
-        my $correl = $sign*sqrt($ssxy*$ssxy/($ssxx*$ssyy));
-        return $correl;
+
+sub correl {
+    my ($ssxx, $ssyy, $ssxy) = @_;
+    return 0 if $ssxx == 0 || $ssyy == 0;
+    my $sign = $ssxy == 0 ? 1 : $ssxy / abs($ssxy);
+    return $sign * sqrt($ssxy * $ssxy / ($ssxx * $ssyy));
 }
