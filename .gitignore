@@ -33,7 +33,11 @@ $RECYCLE.BIN/
 # =========================
 
 data/
+!data/query.tsv
+!data/reference.tsv
+
 results/
+!results/output_example.txt
 
 # Pipeline outputs
 PCC_output
