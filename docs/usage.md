@@ -34,7 +34,7 @@ The pipeline consists of two scripts:
 
 ```bash
 # Using modernized scripts (recommended)
-perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv results/PCC_output.txt
+perl scripts/PCC_main.pl data/query.tsv data/reference.tsv results/PCC_output.txt
 
 # Using original scripts
 perl PCC_main.pl query.tsv reference.tsv
@@ -99,13 +99,13 @@ perl scripts/PCC_main.pl <query_file> <reference_file> [output_file]
 ### Minimal run (output defaults to `PCC_output`)
 
 ```bash
-perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv
+perl scripts/PCC_main.pl data/query.tsv data/reference.tsv
 ```
 
 ### Specifying an output file
 
 ```bash
-perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv results/my_pcc.txt
+perl scripts/PCC_main.pl data/query.tsv data/reference.tsv results/my_pcc.txt
 ```
 
 ### Using the original scripts

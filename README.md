@@ -32,14 +32,13 @@ By computing pairwise correlations across expression profiles, the script helps 
 ├── scripts/
 │   ├── PCC_main.pl          # Modernized main script (recommended)
 │   └── cor.pl               # Modernized correlation script (recommended)
-├── examples/
+├── data/
 │   ├── query.tsv            # Example query feature expression input
-│   ├── reference.tsv        # Example reference feature expression input
+│   └── reference.tsv        # Example reference feature expression input
+├── results/
 │   └── output_example.txt   # Expected output format
 ├── docs/
 │   └── usage.md             # Detailed usage and format guide
-├── data/                    # Your input data (gitignored)
-└── results/                 # Your output results (gitignored)
 ```
 
 ---
@@ -48,7 +47,7 @@ By computing pairwise correlations across expression profiles, the script helps 
 
 ```bash
 # Recommended (modernized scripts)
-perl scripts/PCC_main.pl examples/query.tsv examples/reference.tsv results/PCC_output.txt
+perl scripts/PCC_main.pl data/query.tsv data/reference.tsv results/PCC_output.txt
 
 # Original scripts (preserved as-is)
 perl PCC_main.pl query.tsv reference.tsv
