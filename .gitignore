@@ -32,13 +32,6 @@ $RECYCLE.BIN/
 # Pipeline I/O (keep data out of version control)
 # =========================
 
-data/
-!data/query.tsv
-!data/reference.tsv
-
-results/
-!results/output_example.txt
-
 # Pipeline outputs
 PCC_output
 PCC_output*
